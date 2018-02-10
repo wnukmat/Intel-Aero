@@ -7,6 +7,8 @@ Discription:		Register Map for BMI_160 IMU
 ===========================================================
 Notes:
 	Default register values do not seem to match the stated values (this may be a function of configuration by the Intel-Aero RTF in which I am accessing the sensor), and LSBs of 'MAG_CONF' are listed as contents of 'GYR_RANGE' register
+
+Page numbers refer to Data Sheet DS000-07-786474
 '''
 write = 0x00
 read = 0x80
@@ -26,20 +28,25 @@ ALL_NORMAL_MODE = 0x15		#pmu setting if acc, gyro, and mag and all in normal mod
 ###################################################
 #	Raw IMU Sensor Readings Register Map
 ###################################################
+DATA = 0x04			#starting from mag_x_lsb read 20 bytes
+MAG_ALL = 0x04			#starting from mag_x_lsb read 6 bytes
 MAG_X_LSB = 0x04
 MAG_X_MSB = 0x05
 MAG_Y_LSB = 0x06 
 MAG_Y_MSB = 0x07
 MAG_Z_LSB = 0x08 
-MAG_Z_MSB = 0x09 
+MAG_Z_MSB = 0x09
+HALL_ALL = 0x0A 		#starting from RHALL_x_lsb read 2 bytes
 RHALL_LSB = 0x0A 
 RHALL_MSB = 0x0B
+GYR_ALL = 0x0C			#starting from gyr_x_lsb read 6 bytes
 GYR_X_LSB = 0x0C 
 GYR_X_MSB = 0x0D 
 GYR_Y_LSB = 0x0E 
 GYR_Y_MSB = 0x0F 
 GYR_Z_LSB = 0x10
 GYR_Z_MSB = 0x11
+ACC_ALL = 0x12			#starting from acc_x_lsb read 6 bytes
 ACC_X_LSB = 0x12
 ACC_X_MSB = 0x13
 ACC_Y_LSB = 0x14
@@ -74,7 +81,7 @@ GYR_RANGE = 0x43 		#Selection of gyr angular rate range [default +/- 2000 degree
 MAG_CONF = 0x44 		#[output data rate(3-0)] p59
 FIFO_DOWNS = 0x45 		#configures down sample rate of sensors p 59
 FIFO_CONFIG = 0x46 		#configures FIFO register p60 		##(2 Bytes)##
-MAG_IF = 0x4B 			#see page 61 for discription		##(5 Bytes)##
+FIFO_CONFIG2 = 0x47		#configures which sensors log in FIFO p60
 FOC_CONF = 0x69 		#configuration for fast offset acc/gyr p 75
 CONF = 0x6A 			#enables NVM programming p75
 IF_CONF = 0x6B 			#settings for digital interface (default 3-wire spi)
@@ -82,6 +89,25 @@ PMU_TRIGGER = 0x6C 		#sets trigger conditions to change gyro power mode p76
 NV_CONF = 0x70 			#settings for digital interface (loaded at bootup) p78
 OFFSET = 0x71 			#offset compensation for acc/gyr p79	##(7 Bytes)##
 STEP_CONF = 0x7A 		#configures step detector		##(2 Bytes)##
+
+###################################################
+#	Secondary Interface (magnetometer)
+###################################################
+'''
+magnetometer is accesses via indirect addressing using MAG_IF(5 bytes) register
+MAG_IF_0 = [0b0010-0000]	#I2C device address for bmi150 magnetometer
+MAG_IF_1 = [0b1000-0000] = [manual_en(7), reserved, mag_offset(5:2), mag_rd_burst(1:0)
+MAG_IF_2 = BMI150 register to read
+MAG_IF_3 = BMI150 register to write to
+MAG_IF_4 = Data to write to BMI150 
+'''
+MAG_IF = 0x4B 			#see page 61 for discription		##(5 Bytes)##
+MAG_IF_0 = 0x4B
+MAG_IF_1 = 0x4C
+Aux_Reg2read = 0x4D
+Aux_Reg2write = 0x4E
+Aux_Data2write = 0x4F
+
 
 ###################################################
 #	Interrupt Register Map
