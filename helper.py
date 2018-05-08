@@ -1,13 +1,22 @@
+'''
+===========================================================
+Author:			Matthew Wnuk
+Business:		None of Yours Incorporated
+Date Modified:		Feb 2018
+Discription:		Loose End Functions
+===========================================================
+'''
+
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
 def load_data(name):
-    with open(name + '.pkl', 'rb') as f:
+    with open('data/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 
 def save_data(data, name):
-    with open(name + '.pkl', 'w') as f:
+    with open('data/' + name + '.pkl', 'w') as f:
         pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -31,8 +40,8 @@ def plot_data(sensors):
 		AY = sensors['ay']
 		AZ = sensors['az']
 		GX = sensors['gx']
-		GY = sensors['gx']
-		GZ = sensors['gx']
+		GY = sensors['gy']
+		GZ = sensors['gz']
 		MX = sensors['mag_x']
 		MY = sensors['mag_y']
 		MZ = sensors['mag_z']
@@ -59,6 +68,7 @@ def plot_data(sensors):
 	plt.plot(MZ, label='Mag Z')
 	plt.legend()
 	plt.title('Magnetometer')
+
 	plt.show()
 
 
@@ -78,23 +88,27 @@ def ComputeBias(sensors):
 	GX = sum(sensors['gx'][500:])/len(sensors['gx'][500:])
 	GY = sum(sensors['gy'][500:])/len(sensors['gy'][500:])
 	GZ = sum(sensors['gz'][500:])/len(sensors['gz'][500:])
+	'''
 	MX = sum(sensors['mag_x'])/len(sensors['mag_x'])
 	MY = sum(sensors['mag_y'])/len(sensors['mag_y'])
 	MZ = sum(sensors['mag_z'])/len(sensors['mag_z'])
-
+	
 	BIAS = [AX, AY, AZ, GX, GY, GZ, MX, MY, MZ]
+	'''
+	BIAS = [AX, AY, AZ, GX, GY, GZ, 1, 1, 1]
 	save_data(BIAS, 'bias')
 	return BIAS
 
 def AdjustReadings(ax, ay, az, wx, wy, wz, mx, my, mz, bias):
-	Acc_sensitivity = 16384.
-	Gyr_sensitivity = 262.4
-	AX = (ax - bias[0])*3000./((2**8 -1)*Acc_sensitivity)
-	AY = (ay - bias[1])*3000./((2**8 -1)*Acc_sensitivity)
-	AZ = (az - bias[2])*3000./((2**8 -1)*Acc_sensitivity) - 1
-	GX = (wx - bias[3])*3000./((2**8 -1)*Gyr_sensitivity)
-	GY = (wy - bias[4])*3000./((2**8 -1)*Gyr_sensitivity)
-	GZ = (wz - bias[5])*3000./((2**8 -1)*Gyr_sensitivity)
+	#Acc_sensitivity = 2048.		#p8 configured to +/-16g 
+	Acc_sensitivity = 16384.		#p8 +/-2g setting by default
+	Gyr_sensitivity = 262.4			#p9 configured to 125 range
+	AX = (ax - bias[0])/Acc_sensitivity
+	AY = (ay - bias[1])/Acc_sensitivity
+	AZ = (az - bias[2])/Acc_sensitivity + 1
+	GX = (np.pi/180)*(wx - bias[3])/Gyr_sensitivity
+	GY = (np.pi/180)*(wy - bias[4])/Gyr_sensitivity
+	GZ = (np.pi/180)*(wz - bias[5])/Gyr_sensitivity
 	MX = (mx - bias[6])
 	MY = (my - bias[7])
 	MZ = (mz - bias[8])
@@ -102,12 +116,12 @@ def AdjustReadings(ax, ay, az, wx, wy, wz, mx, my, mz, bias):
 	return AX, AY, AZ, GX, GY, GZ, MX, MY, MZ
 
 def np_sensors(sensors):
-	AX = np.array(sensors['ax'][500:])
-	AY = np.array(sensors['ay'][500:])
-	AZ = np.array(sensors['az'][500:])
-	GX = np.array(sensors['gx'][500:])
-	GY = np.array(sensors['gy'][500:])
-	GZ = np.array(sensors['gz'][500:])
+	AX = np.array(sensors['ax'])
+	AY = np.array(sensors['ay'])
+	AZ = np.array(sensors['az'])
+	GX = np.array(sensors['gx'])
+	GY = np.array(sensors['gy'])
+	GZ = np.array(sensors['gz'])
 	MX = np.array(sensors['mag_x'])
 	MY = np.array(sensors['mag_y'])
 	MZ = np.array(sensors['mag_z'])
