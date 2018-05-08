@@ -12,7 +12,7 @@ Page numbers refer to Data Sheet DS000-07-786474
 '''
 write = 0x00
 read = 0x80
-
+READBYTE = 0x00
 ###################################################
 #	STATUS Register Map
 ###################################################
@@ -22,7 +22,7 @@ PMU_STATUS = 0x03		#Shows power mode of acc, gyr, mag p48 manual
 INT_STATUS = 0x1C		#Interrupt status reg p51-53		##(4 Bytes)##
 STATUS = 0x1B 			#Status of Data reg p51
 FIFO_LENGTH = 0x22		#Current FIFO fill level p54		##(2 Bytes)##
-SSELF_TEST = 0x6D		#settings for self test configuration and trigger p77
+SELF_TEST = 0x6D		#settings for self test configuration and trigger p77
 ALL_NORMAL_MODE = 0x15		#pmu setting if acc, gyro, and mag and all in normal mode
 
 ###################################################
@@ -76,8 +76,17 @@ SENSORTIME_2 = 0x1A
 ###################################################
 ACC_CONF = 0x40			#[undersampling(7), bandwidth(6-4), output data rate(3-0)] p56
 ACC_RANGE = 0x41 		#Selection of acc g-range [default +/- 2g] p56
+A_RANGE_2G = 0x02
+A_RANGE_4G = 0x05
+A_RANGE_8G = 0x08
+A_RANGE_16G = 0x0C
 GYR_CONF = 0x42 		#[bandwidth(5-4), output data rate(3-0)] p57
 GYR_RANGE = 0x43 		#Selection of gyr angular rate range [default +/- 2000 degree/s] p58
+G_RANGE_2K = 0x00
+G_RANGE_1K = 0x01
+G_RANGE_500 = 0x02
+G_RANGE_250 = 0x03
+G_RANGE_125 = 0x04
 MAG_CONF = 0x44 		#[output data rate(3-0)] p59
 FIFO_DOWNS = 0x45 		#configures down sample rate of sensors p 59
 FIFO_CONFIG = 0x46 		#configures FIFO register p60 		##(2 Bytes)##
@@ -88,6 +97,14 @@ IF_CONF = 0x6B 			#settings for digital interface (default 3-wire spi)
 PMU_TRIGGER = 0x6C 		#sets trigger conditions to change gyro power mode p76
 NV_CONF = 0x70 			#settings for digital interface (loaded at bootup) p78
 OFFSET = 0x71 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET0 = 0x71 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET1 = 0x72 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET2 = 0x73 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET3 = 0x74 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET4 = 0x75 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET5 = 0x76 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET6 = 0x77 			#offset compensation for acc/gyr p79	##(7 Bytes)##
+OFFSET_OFF = 0x00
 STEP_CONF = 0x7A 		#configures step detector		##(2 Bytes)##
 
 ###################################################
@@ -137,7 +154,8 @@ GYR_FAST = 0x16			#puts gyro into fast start up mode, see page 76
 MAG_SUS = 0x18			#puts magnometer into suspend mode
 MAG_LP = 0x1A			#puts magnometer into low power mode
 MAG_NORMAL = 0x19		#puts magnometer into normal mode
-
+FOC_START = 0x03		#starts the fast offset compensation procedure
+PROG_NVM = 0xA0			#program non-volatile memory
 
 
 
